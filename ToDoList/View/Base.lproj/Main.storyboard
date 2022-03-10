@@ -7,6 +7,45 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Category List-->
+        <scene sceneID="iDx-T4-vfF">
+            <objects>
+                <tableViewController id="J6U-VI-Uwb" customClass="CategoryViewController" customModule="ToDoList" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="qW1-nd-z6J">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="FJZ-vW-jQv">
+                                <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FJZ-vW-jQv" id="8eL-sZ-zbu">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="J6U-VI-Uwb" id="lBu-Lk-SxI"/>
+                            <outlet property="delegate" destination="J6U-VI-Uwb" id="TDO-4d-7Jl"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Category List" id="Der-SL-LG5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="9UJ-Bz-VJo">
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addButtonPressed:" destination="J6U-VI-Uwb" id="Yxx-vg-cSQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="ZHb-oS-WpQ" kind="show" id="MkN-Ob-yvC"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TnX-Sl-1EF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1148" y="104"/>
+        </scene>
         <!--To Do List:-->
         <scene sceneID="tjB-r2-7EI">
             <objects>
@@ -49,7 +88,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oUx-xa-WjF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1087" y="46"/>
+            <point key="canvasLocation" x="1867" y="104"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="aND-xH-tCy">
@@ -67,7 +106,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="ZHb-oS-WpQ" kind="relationship" relationship="rootViewController" id="eNA-SE-FMB"/>
+                        <segue destination="J6U-VI-Uwb" kind="relationship" relationship="rootViewController" id="a4Y-WT-Q2r"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xrS-f0-GXA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
