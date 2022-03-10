@@ -47,7 +47,9 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
         tableView.reloadData()
     }
     
-    func loadCategory(with request: NSFetchRequest<Category> = Category.fetchRequest() ) {
+    func loadCategory() {
+        
+        let request: NSFetchRequest<Category> = Category.fetchRequest()
         do {
             categoryArray = try context.fetch(request)
         } catch {
@@ -82,4 +84,14 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
     }
     
     // MARK: - TableView Delegate Method
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ToDoListViewController
+        if  let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
+    }
 }
