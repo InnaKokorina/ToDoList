@@ -6,14 +6,12 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-var categoryArray = [Category]()
-    
-let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+    let realm = try! Realm()
+    var categoryArray: Results<Category>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,22 +22,42 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
     // MARK: - TableView DataSource Method
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        categoryArray.count
+        categoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let category = categoryArray[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = category.name
+        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No category added yet"
         return cell
     }
     
+    // MARK: - delete categories
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            if let category = categoryArray?[indexPath.row] {
+                do {
+                    try realm.write {
+                        realm.delete(category)
+                    }
+                } catch {
+                    print("error in selected item \(error)")
+                }
+            }
+            tableView.reloadData()
+            }
+    }
     
     // MARK: - Manipulate Method
     
-    func saveCategory() {
+    func save(category: Category) {
         do {
-            try context.save()
+            try realm.write({
+                try realm.add(category)
+            })
         } catch {
             print("Error saving Category context \(error)")
         }
@@ -47,15 +65,10 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
         tableView.reloadData()
     }
     
+    
     func loadCategory() {
-        
-        let request: NSFetchRequest<Category> = Category.fetchRequest()
-        do {
-            categoryArray = try context.fetch(request)
-        } catch {
-            print("Error fetching Category context \(error)")
-        }
-        tableView.reloadData()
+        categoryArray = realm.objects(Category.self)
+                tableView.reloadData()
     }
     
     
@@ -66,21 +79,20 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
         let alert = UIAlertController(title: "Add new category", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add category", style: .default) { action in
             
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             newCategory.name = textField.text!
-            self.categoryArray.append(newCategory)
             
-            self.saveCategory()
+            self.save(category: newCategory)
             
             
         }
-            alert.addTextField { alertTextField in
-                alertTextField.placeholder = "Create new category"
-                textField = alertTextField
-            }
-            alert.addAction(action)
-            present(alert, animated: true, completion: nil)
-       
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "Create new category"
+            textField = alertTextField
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+        
     }
     
     // MARK: - TableView Delegate Method
@@ -91,7 +103,7 @@ let context = (UIApplication.shared.delegate as! AppDelegate).persistentContaine
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListViewController
         if  let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categoryArray?[indexPath.row]
         }
     }
 }
