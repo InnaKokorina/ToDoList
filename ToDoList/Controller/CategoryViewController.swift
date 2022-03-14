@@ -7,8 +7,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeViewController {
     
     let realm = try! Realm()
     var categoryArray: Results<Category>?
@@ -17,6 +18,15 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
         
         loadCategory()
+        tableView.separatorStyle = .none
+        
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller doesn't exist")}
+        
+        navBar.backgroundColor = .black
+        navBar.tintColor = .white
+        
     }
     
     // MARK: - TableView DataSource Method
@@ -26,30 +36,15 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No category added yet"
+        if let backgroundColor = HexColor(categoryArray?[indexPath.row].cellColor ?? "00D4E1") {
+            cell.backgroundColor = backgroundColor
+            cell.textLabel?.textColor = ContrastColorOf(backgroundColor, returnFlat: true)
+        }
         return cell
     }
     
-    // MARK: - delete categories
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if (editingStyle == .delete) {
-            if let category = categoryArray?[indexPath.row] {
-                do {
-                    try realm.write {
-                        realm.delete(category)
-                    }
-                } catch {
-                    print("error in selected item \(error)")
-                }
-            }
-            tableView.reloadData()
-            }
-    }
     
     // MARK: - Manipulate Method
     
@@ -68,7 +63,7 @@ class CategoryViewController: UITableViewController {
     
     func loadCategory() {
         categoryArray = realm.objects(Category.self)
-                tableView.reloadData()
+        tableView.reloadData()
     }
     
     
@@ -81,7 +76,7 @@ class CategoryViewController: UITableViewController {
             
             let newCategory = Category()
             newCategory.name = textField.text!
-            
+            newCategory.cellColor = UIColor.randomFlat().hexValue()
             self.save(category: newCategory)
             
             
@@ -106,4 +101,20 @@ class CategoryViewController: UITableViewController {
             destinationVC.selectedCategory = categoryArray?[indexPath.row]
         }
     }
+    
+    // MARK: - DELETE CELL
+    override func updatedModel(at indexPath: IndexPath) {
+        if let category = self.categoryArray?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(category)
+                }
+            } catch {
+                print("error in deleting category \(error)")
+            }
+        }
+    }
+    
 }
+
+
